@@ -1,14 +1,15 @@
-#define MAXTAM 100
 typedef struct item Item;
+typedef struct celula Celula;
 typedef struct lista Lista;
 
 Lista * cria_lista_vazia();
 int verifica_lista_vazia(Lista *l);
-int verifica_lista_cheia(Lista *l);
-void adiciona_item_fim_lista(Lista *l, int codigo, float peso);
-void imprime_lista(Lista *l);
+void inserir_inicio(Lista *l, int chave);
+void imprime_esq_dir(Lista *l);
+void imprime_dir_esq(Lista *l);
+void insere_final(Lista *l, int chave);
+void insere_meio(Lista *l, int chave_b, int chave_i);
+void remove_inicio(Lista *l);
+void remove_final(Lista *l);
+void remove_meio(Lista *l, int chave);
 void libera_lista(Lista *l);
-int busca_mais_caro(Lista *l);
-Item *remove_item(Lista *l, int indice);
-float calcula_peso_total(Lista *l);
-void imprime_item(Item *qualquer);

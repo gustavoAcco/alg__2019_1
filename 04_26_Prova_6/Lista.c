@@ -1,96 +1,182 @@
-#include <stdio.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include "Lista.h"
 
 struct item {
-    int codigo;
-    float peso;
+  int chave;
+  // demais campos
+};
+struct celula {
+  Item item;
+  Celula *ant;
+  Celula *prox;
 };
 struct lista {
-    Item item[MAXTAM];
-    int ultimo;
+  Celula *primeira;
 };
 
 Lista * cria_lista_vazia() {
-    Lista *l = malloc(sizeof(Lista));
-    l->ultimo = -1;
-    return l;
+  Lista *l = malloc(sizeof(Lista));
+  l->primeira = NULL;
+  return l;
 }
 
-// retorna 1 se a lista está vazia ou 0 se não está vazia
+// retorna 1 se está vazia, ou 0 se não está
 int verifica_lista_vazia(Lista *l) {
-    return l->ultimo == -1;
+  return l->primeira == NULL;
 }
 
-// retorna 1 se a lista está cheia ou 0 se não está cheia
-int verifica_lista_cheia(Lista *l) {
-    return l->ultimo == MAXTAM - 1;
+void inserir_inicio(Lista *l, int chave) {
+  Item novo;
+  novo.chave = chave;
+
+  Celula *nova = malloc(sizeof(Celula));
+  Celula *primeira = l->primeira;
+
+  nova->item = novo;
+  nova->ant = NULL;
+  nova->prox = primeira;
+
+  // se a lista não está vazia, a a anterior da que era a primeira será a nova
+  if(!verifica_lista_vazia(l))
+    primeira->ant = nova;
+
+  l->primeira = nova;
 }
 
-void adiciona_item_fim_lista(Lista *l, int codigo, float peso) {
-    if(verifica_lista_cheia(l)){
-        printf("Lista cheia!\n");
-        return;
+void imprime_esq_dir(Lista *l) {
+  Celula *aux = l->primeira;
+  while(aux != NULL) {
+    printf("Chave: %d\n", aux->item.chave);
+    aux = aux->prox;
+  }
+}
+
+void imprime_dir_esq(Lista *l) {
+  if(verifica_lista_vazia(l))
+    return;
+  Celula *ultima = l->primeira;
+  while(ultima->prox != NULL) { // achar a última
+    ultima = ultima->prox;
+  }
+  while(ultima != NULL) {
+    printf("Chave: %d\n", ultima->item.chave);
+    ultima = ultima->ant;
+  }
+}
+
+void insere_final(Lista *l, int chave) {
+  if(verifica_lista_vazia(l))
+    inserir_inicio(l, chave);
+  else {
+    Item novo;
+    novo.chave = chave;
+
+    Celula *nova = malloc(sizeof(Celula));
+    nova->item = novo;
+    nova->prox = NULL;
+
+    Celula *ultima = l->primeira;
+    while(ultima->prox != NULL) { // achar a última
+      ultima = ultima->prox;
     }
-    Item novo_item;
-    novo_item.codigo = codigo;
-    novo_item.peso = peso;
-    l->ultimo++;
-    l->item[l->ultimo] = novo_item;
+    nova->ant = ultima;
+
+    ultima->prox = nova;
+  }
 }
 
-void imprime_lista(Lista *l) {
-    int tam = l->ultimo + 1;
-    int i;
-    for(i = 0; i < tam; i++)
-        printf("%d %.3f ", l->item[i].codigo, l->item[i].peso);
+Celula * busca_chave(Lista *l, int chave) {
+  Celula *aux = l->primeira;
+  while(aux != NULL && aux->item.chave != chave) {
+    aux = aux->prox;
+  }
+  return aux;
 }
 
+void insere_meio(Lista *l, int chave_b, int chave_i) {
+  Celula *anterior = busca_chave(l, chave_b);
+  if(anterior == NULL) {
+    printf("Chave não encontrada ou lista vazia.\n");
+    return;
+  }
+  Item novo;
+  novo.chave = chave_i;
 
-int busca_mais_caro(Lista *l) {
-	int maiscaro = l->ultimo, i;
-	
-	for(i = l->ultimo - 1; i >= 0; i--) {
-		if(l->item[i].peso > l->item[maiscaro].peso) 
-			maiscaro = i;
-	}
+  Celula *nova = malloc(sizeof(Celula));
+  nova->item = novo;
 
-	return maiscaro;
+  Celula *proxima = anterior->prox;
+
+  nova->ant = anterior;
+  nova->prox = proxima;
+
+  anterior->prox = nova;
+
+  // se a inserção não for no fim, a célula seguinte tem nova como anterior
+  if(proxima != NULL)
+    proxima->ant = nova;
 }
 
-Item *remove_item(Lista *l, int indice) {
-	Item *aux;
-	if(indice == l->ultimo) {
-		aux->codigo = l->item[l->ultimo].codigo;
-		aux->peso = l->item[l->ultimo].peso;
-		l->ultimo--;
-		return aux;
-	} else {
-		int i;
-		aux->codigo = l->item[indice].codigo;
-		aux->peso = l->item[indice].peso;
-		for(i = indice + 1; i < l->ultimo; i++) {
-			l->item[i-1] = l->item[i];
-		}
-		return aux;
-		
-	}
-
+void remove_inicio(Lista *l) {
+  if(verifica_lista_vazia(l)) {
+    printf("A lista está vazia.\n");
+    return;
+  }
+  Celula *primeira = l->primeira;
+  if(primeira->prox == NULL) // se era a única
+    l->primeira = NULL;
+  else {
+    Celula *proxima = primeira->prox;
+    proxima->ant = NULL;
+    l->primeira = proxima;
+  }
+  free(primeira);
 }
 
-float calcula_peso_total(Lista *l) {
-	int i;
-	float soma = 0;
-	for(i = 0; i < l->ultimo; i++) {
-		soma += l->item[i].peso;
-	}
-	return soma;
+void remove_final(Lista *l) {
+  if(verifica_lista_vazia(l)) {
+    printf("A lista está vazia.\n");
+    return;
+  }
+  Celula *ultima = l->primeira;
+  while(ultima->prox != NULL)
+    ultima = ultima->prox;
+  if(ultima->ant == NULL) // se era a única
+    l->primeira = NULL;
+  else {
+    Celula *anterior = ultima->ant;
+    anterior->prox = NULL;
+  }
+  free(ultima);
 }
 
-void imprime_item(Item *qualquer) {
-	printf("%d %.3f", qualquer->codigo, qualquer->peso);
+void remove_meio(Lista *l, int chave) {
+  Celula *remover = busca_chave(l, chave);
+  if(remover == NULL) {
+    printf("Chave não encontrada.\n");
+    return;
+  }
+  if(remover->ant == NULL)
+    remove_inicio(l);
+  else if(remover->prox == NULL)
+    remove_final(l);
+  else {
+    Celula *anterior = remover->ant;
+    Celula *proxima = remover->prox;
+    anterior->prox = proxima;
+    proxima->ant = anterior;
+    free(remover);
+  }
 }
 
 void libera_lista(Lista *l) {
-    free(l);
+  Celula *aux = l->primeira;
+  Celula *liberar;
+  while(aux != NULL) {
+    liberar = aux;
+    aux = aux->prox;
+    free(liberar);
+  }
+  free(l);
 }
