@@ -3,13 +3,15 @@
 #include "sorting.h"
 
 int main(void) {
-	int num, i;
-	int tam = 0;
-	int *vector = malloc(100*sizeof(int));
-	while(scanf("%d", &num) == 1) {
-		vector[tam++] = num;
+	int num;	
+	int i;
+	char **vector = malloc(100*sizeof(char*));
+	scanf("%d", &num);	
+	for(i = 0; i < num; i++) {
+		vector[i] = malloc(50*sizeof(char));
+		scanf("%[^\n]s", vector[i]);
 	}
-	bubble_sort(vector, tam);
-	print_vector(vector, tam);
+	word_sort(vector, i);
+	print_vector_string(vector, i);
 	return 0;
 }
