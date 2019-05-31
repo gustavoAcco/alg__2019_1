@@ -2,10 +2,12 @@
 #include <string.h>
 #include <stdlib.h>
 
+
+//miscelanious
 void print_vector_string(char **vector, int len) {
 	int i;
 	for(i = 0; i < len; i++) {
-		printf("%s\t", vector[i]);
+		printf("%s ", vector[i]);
 	}
 	printf("\n");
 	return;
@@ -18,6 +20,8 @@ void print_vector(int *vector, int len) {
 	printf("\n");
 	return;
 }
+
+//secondary functions
 void swap_values_char(char **a,char **b) {
 	char *aux;
 	aux = *a;
@@ -41,6 +45,8 @@ int *find_smallest(int *vector, int len) {
 	return smallest;
 }
 
+
+//sorting algorithms
 void selection_sort(int *vector, int len) {
 	int i, k;
 	for(i = 0, k = len; i < len; i++, k--) 
@@ -58,11 +64,15 @@ void insertion_sort(int *vector, int len) {
 }
 
 void bubble_sort(int *vector, int len) {
-	int i, j;
-	for(i = len; i > 0; i--) 
-		for(j = 0; j < i; j++)
-			if(vector[j] > vector[j + 1])
-				swap_values(&vector[j], &vector[j + 1]);
+	int i, j, flag;
+	for(i = len, flag = 0; i > 0; i--) 
+		if(flag == 0)
+			for(j = 0; j < i; j++)
+				if(vector[j] > vector[j + 1])
+					swap_values(&vector[j], &vector[j + 1]);
+					flag = 0;
+				else 
+					flag = 1;
 	return;
 }
 
@@ -82,4 +92,14 @@ void word_sort(char **vector, int len) {
 			if(strcmp(vector[j], vector[j + 1]) > 0)
 				swap_values_char(&vector[j], &vector[j + 1]);
 	return;
+}
+
+void merge_sort(int *vector, int len) {
+	
+
+	if(len == 1)
+		return;
+	else {
+		
+	}
 }

@@ -5,11 +5,11 @@
 int main(void) {
 	int num;	
 	int i;
-	char **vector = malloc(100*sizeof(char*));
 	scanf("%d", &num);	
+	char **vector = malloc(num*sizeof(char*));
 	for(i = 0; i < num; i++) {
 		vector[i] = malloc(50*sizeof(char));
-		scanf("%[^\n]s", vector[i]);
+		scanf("%s", vector[i]);
 	}
 	word_sort(vector, i);
 	print_vector_string(vector, i);
